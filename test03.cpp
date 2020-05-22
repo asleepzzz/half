@@ -17,22 +17,26 @@
 #include <iostream>
 #include "half.hpp"
 #include <stdio.h>
+#include <hip/hip_runtime.h>
 
 using half_float::half;
 
 
-static inline size_t naive_conv_out_size(size_t in_size, size_t pad, size_t dilation, size_t ksize, size_t stride)
+constexpr unsigned x = 16;
+#define HIP_ASSERT(x) (assert((x)==hipSuccess))
+
+static inline size_t conv_out_size(size_t in_size, size_t pad, size_t dilation, size_t ksize, size_t stride)
 {
      return (in_size + 2*pad- dilation*(ksize-1) -1)/stride + 1;
 }
 
-static inline void naive_conv_fwd_nchw(const half *src, const half *filter, half *dst,
+static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *dst,
     size_t n, size_t w, size_t h, size_t c, size_t k, size_t fx, size_t fy, size_t px, size_t py, size_t sx, size_t sy, size_t dx, size_t dy)
 {
     size_t in,ik,ioh,iow,ic,is,ir;
     size_t cur_h, cur_w, o_idx, i_idx, f_idx;
-    size_t oh = naive_conv_out_size(h, py, dy, fy, sy);
-    size_t ow = naive_conv_out_size(w, px, dx, fx, sx);
+    size_t oh = conv_out_size(h, py, dy, fy, sy);
+    size_t ow = conv_out_size(w, px, dx, fx, sx);
     for(in=0;in<n;in++){
         for(ik=0;ik<k;ik++){
             for(ioh=0;ioh<oh;ioh++){
@@ -60,7 +64,8 @@ static inline void naive_conv_fwd_nchw(const half *src, const half *filter, half
     }
 }
 
-
+#define HSACO "kernel.co"
+#define HSA_KERNEL "gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw"
 int main(int argc, char *argv[])
 {
 	//half a(3.14159), b(-7), c = sin(a+b);
@@ -71,8 +76,8 @@ int main(int argc, char *argv[])
     unsigned int W = 14;
     unsigned int R = 3;
     unsigned int S = 3;
-    unsigned int Oh = naive_conv_out_size(size_t(H), size_t(0), size_t(0), size_t(R), size_t(1));
-    unsigned int Ow = naive_conv_out_size(size_t(W), size_t(0), size_t(0), size_t(S), size_t(1));
+    unsigned int Oh = conv_out_size(size_t(H), size_t(0), size_t(0), size_t(R), size_t(1));
+    unsigned int Ow = conv_out_size(size_t(W), size_t(0), size_t(0), size_t(S), size_t(1));
 
 
     unsigned int inSize = N * C* H* W* sizeof(half);
@@ -81,6 +86,12 @@ int main(int argc, char *argv[])
     half *in = (half *)malloc(inSize);
     half *wei = (half *)malloc(weiSize);
     half *out = (half *)malloc(outSize);
+
+    half *dev_in, *dev_wei, *dev_out;
+    HIP_ASSERT(hipMalloc(&dev_in, inSize));
+    HIP_ASSERT(hipMalloc(&dev_wei, weiSize));
+    HIP_ASSERT(hipMalloc(&dev_out, outSize));
+
 
     for (int i =0;i< N * C* H* W;i++)
     {
@@ -94,12 +105,48 @@ int main(int argc, char *argv[])
 
     for (int i =0;i< N * K* Oh* Ow;i++)
     {
-        out[i]= i ;
+        out[i]= 0 ;
     }
 
-    naive_conv_fwd_nchw(in, wei,out, N, H, W, C, K, S, R , 0 ,0 , 1, 1, 1, 1);
- 
-    //printf("====kevin test %f======\n",float(in[2])); 
+    HIP_ASSERT(hipMemcpy(dev_in, in, inSize, hipMemcpyHostToDevice));
+    HIP_ASSERT(hipMemcpy(dev_wei, wei, weiSize, hipMemcpyHostToDevice));
+    HIP_ASSERT(hipMemcpy(dev_out, out, outSize, hipMemcpyHostToDevice));
+
+    cpu_conv_fwd_nchw(in, wei,out, N, H, W, C, K, S, R , 0 ,0 , 1, 1, 1, 1);
+
+
+    HIP_ASSERT(hipSetDevice(0));
+    hipInit(0);
+    hipDevice_t device;
+    hipCtx_t context;
+    hipDeviceGet(&device, 0);
+    hipCtxCreate(&context, 0, device);
+    hipModule_t Module;
+    hipFunction_t Function;
+
+
+    HIP_ASSERT(hipModuleLoad(&Module, HSACO));
+    HIP_ASSERT(hipModuleGetFunction(&Function, Module, HSA_KERNEL));
+
+
+
+    struct {
+        half * in;
+        half * wei;
+        half *out;
+    } args;
+
+    args.in = dev_in;
+    args.wei = dev_wei;
+    args.out = out;
+
+    size_t arg_size = sizeof(args);
+    void* config[] = {HIP_LAUNCH_PARAM_BUFFER_POINTER, &args, HIP_LAUNCH_PARAM_BUFFER_SIZE,
+                            &arg_size, HIP_LAUNCH_PARAM_END};
+
+
+    HIP_ASSERT(hipModuleLaunchKernel(Function, 1,1,1, 64,1,1,  0, 0, NULL, (void**)&config ));
+
 
     return 0;
 }
