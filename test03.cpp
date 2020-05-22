@@ -64,7 +64,7 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
     }
 }
 
-#define HSACO "kernel.co"
+#define HSACO "xx.co"
 #define HSA_KERNEL "gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw"
 int main(int argc, char *argv[])
 {
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
     unsigned int C = 64;
     unsigned int H = 14;
     unsigned int W = 14;
-    unsigned int R = 3;
-    unsigned int S = 3;
+    unsigned int R = 1;
+    unsigned int S = 1;
     unsigned int Oh = conv_out_size(size_t(H), size_t(0), size_t(0), size_t(R), size_t(1));
     unsigned int Ow = conv_out_size(size_t(W), size_t(0), size_t(0), size_t(S), size_t(1));
 
@@ -126,6 +126,7 @@ int main(int argc, char *argv[])
 
 
     HIP_ASSERT(hipModuleLoad(&Module, HSACO));
+/*
     HIP_ASSERT(hipModuleGetFunction(&Function, Module, HSA_KERNEL));
 
 
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
 
 
     HIP_ASSERT(hipModuleLaunchKernel(Function, 1,1,1, 64,1,1,  0, 0, NULL, (void**)&config ));
-
+*/
 
     return 0;
 }
