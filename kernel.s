@@ -5,7 +5,7 @@
 	.type	gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw,@function
 gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw: ; @gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw
 ; %bb.0:                                ; %entry
-	s_mov_b32 s3, 0x5397829d
+	s_mov_b32 s3, 0x5397829d ;//1402438301
 	v_mov_b32_e32 v1, s3
 	v_mul_hi_i32 v1, s6, v1
 	v_and_b32_e32 v6, 0xc0, v0
@@ -37,9 +37,9 @@ gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw: ; @gridwi
 	v_lshl_or_b32 v10, v5, 3, v3
 	v_lshrrev_b32_e32 v11, 31, v9
 	v_ashrrev_i32_e32 v9, 6, v9
-	s_load_dwordx2 s[10:11], s[4:5], 0x0
-	s_load_dwordx2 s[8:9], s[4:5], 0x8
-	s_load_dwordx2 s[0:1], s[4:5], 0x10
+	s_load_dwordx2 s[10:11], s[4:5], 0x0 ;//in
+	s_load_dwordx2 s[8:9], s[4:5], 0x8 ;//wei
+	s_load_dwordx2 s[0:1], s[4:5], 0x10 ;//out
 	v_add_u32_e32 v10, v10, v8
 	s_movk_i32 s2, 0xc4
 	v_add_u32_e32 v9, v9, v11
@@ -701,6 +701,10 @@ gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw: ; @gridwi
 	v_cvt_f16_f32_e32 v67, v67
 	s_nop 0
 	s_nop 0
+
+
+
+/*
 	global_store_short v[0:1], v6, s[0:1]
 	global_store_short v[0:1], v7, s[0:1] offset:392
 	global_store_short v[0:1], v20, s[0:1] offset:784
@@ -815,6 +819,7 @@ gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw: ; @gridwi
 	global_store_short v[0:1], v3, off offset:1608
 	global_store_short v[0:1], v4, off offset:2000
 	global_store_short v[0:1], v5, off offset:2392
+*/
 	s_endpgm
 	.section	.rodata,#alloc
 	.p2align	6

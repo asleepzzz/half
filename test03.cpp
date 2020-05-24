@@ -69,9 +69,9 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
 int main(int argc, char *argv[])
 {
 	//half a(3.14159), b(-7), c = sin(a+b);
-    unsigned int N = 4;
-    unsigned int K = 64;
-    unsigned int C = 64;
+    unsigned int N = 128;
+    unsigned int K = 1024;
+    unsigned int C = 1024;
     unsigned int H = 14;
     unsigned int W = 14;
     unsigned int R = 1;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     HIP_ASSERT(hipMemcpy(dev_wei, wei, weiSize, hipMemcpyHostToDevice));
     HIP_ASSERT(hipMemcpy(dev_out, out, outSize, hipMemcpyHostToDevice));
 
-    cpu_conv_fwd_nchw(in, wei,out, N, H, W, C, K, S, R , 0 ,0 , 1, 1, 1, 1);
+    //cpu_conv_fwd_nchw(in, wei,out, N, H, W, C, K, S, R , 0 ,0 , 1, 1, 1, 1);
 
 
     HIP_ASSERT(hipSetDevice(0));
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 
 
     HIP_ASSERT(hipModuleLoad(&Module, HSACO));
-/*
+
     HIP_ASSERT(hipModuleGetFunction(&Function, Module, HSA_KERNEL));
 
 
@@ -145,9 +145,11 @@ int main(int argc, char *argv[])
     void* config[] = {HIP_LAUNCH_PARAM_BUFFER_POINTER, &args, HIP_LAUNCH_PARAM_BUFFER_SIZE,
                             &arg_size, HIP_LAUNCH_PARAM_END};
 
+    printf("======gpu start=======\n");
+//hipLaunchKernelGGL()
 
-    HIP_ASSERT(hipModuleLaunchKernel(Function, 1,1,1, 64,1,1,  0, 0, NULL, (void**)&config ));
-*/
+    HIP_ASSERT(hipModuleLaunchKernel(Function, 1568,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
+
 
     return 0;
 }
