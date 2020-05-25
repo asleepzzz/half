@@ -19,5 +19,5 @@ LDFLAGS=" -L/opt/rocm/hcc/lib -L/opt/rocm/lib -L/opt/rocm/lib64"\
 
 #/usr/bin/g++ -Wall -pedantic -g -O2 -I include/ -o test test03.cpp
 
-/opt/rocm/hcc/bin/clang -x assembler -target amdgcn--amdhsa -mcpu=gfx908 -mcode-object-v3  kernel.s  -o xx.co
+/opt/rocm/hcc/bin/clang -x assembler -target amdgcn--amdhsa -mcpu=gfx908 -mcode-object-v3  0525.s  -o xx.co
 g++ $CXXFLAGS $SRC $LDFLAGS -o $TARGET

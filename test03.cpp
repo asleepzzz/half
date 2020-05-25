@@ -20,7 +20,7 @@
 #include <hip/hip_runtime.h>
 
 using half_float::half;
-
+using half_float::half_cast;
 
 constexpr unsigned x = 16;
 #define HIP_ASSERT(x) (assert((x)==hipSuccess))
@@ -42,8 +42,10 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
             for(ioh=0;ioh<oh;ioh++){
                 for(iow=0;iow<ow;iow++){
                     // sliding window for this filter
-                    half value(0.0);
+                    float value =0.0f;
                     o_idx = in*k*oh*ow+ik*oh*ow+ioh*ow+iow;
+                    if (o_idx>10) continue;
+                    
                     for(ic=0;ic<c;ic++){
                         for(ir=0;ir<fy;ir++){
                             cur_h = sy*ioh-py+dy*ir;
@@ -53,11 +55,11 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
                                 if(cur_w<0 || cur_w>=w) continue;
                                 i_idx = in*c*h*w+ic*h*w+cur_h*w+cur_w;
                                 f_idx = ik*c*fy*fx+ic*fy*fx+ir*fx+is;
-                                value += src[i_idx]*filter[f_idx];
+                                value += half_cast<float>(src[i_idx])*half_cast<float>(filter[f_idx]);
                             }
                         }
                     }
-                    dst[o_idx] = value;
+                    dst[o_idx] = half_cast<half>(value);
                 }
             }
         }
@@ -86,33 +88,38 @@ int main(int argc, char *argv[])
     half *in = (half *)malloc(inSize);
     half *wei = (half *)malloc(weiSize);
     half *out = (half *)malloc(outSize);
+    half *cpu_out = (half *)malloc(outSize);
 
     half *dev_in, *dev_wei, *dev_out;
     HIP_ASSERT(hipMalloc(&dev_in, inSize));
     HIP_ASSERT(hipMalloc(&dev_wei, weiSize));
     HIP_ASSERT(hipMalloc(&dev_out, outSize));
 
-
     for (int i =0;i< N * C* H* W;i++)
     {
-        in[i]= i ;
+        half tmp(1.0);
+        half tmp2(0.0);
+        //half min is 0.00006,so use 0.0001*constant,due to C*R*S=1024,if diff <0.001,it's ok
+        in[i] =  half_cast<half>(0.0001f*(i%10));
     }
 
     for (int i =0;i< K * C* R* S;i++)
     {
-        wei[i]= i ;
+        half tmp(1.0);
+        wei[i] = half_cast<half>(1.0f);
     }
 
     for (int i =0;i< N * K* Oh* Ow;i++)
     {
-        out[i]= 0 ;
+        out[i] = half_cast<half>(0.0f);
+        cpu_out[i] =  half_cast<half>(0.0f);
     }
 
+    cpu_conv_fwd_nchw(in, wei,cpu_out, N, W, H, C, K, R, S , 0 ,0 , 1, 1, 1, 1);
     HIP_ASSERT(hipMemcpy(dev_in, in, inSize, hipMemcpyHostToDevice));
     HIP_ASSERT(hipMemcpy(dev_wei, wei, weiSize, hipMemcpyHostToDevice));
     HIP_ASSERT(hipMemcpy(dev_out, out, outSize, hipMemcpyHostToDevice));
 
-    //cpu_conv_fwd_nchw(in, wei,out, N, H, W, C, K, S, R , 0 ,0 , 1, 1, 1, 1);
 
 
     HIP_ASSERT(hipSetDevice(0));
@@ -129,27 +136,55 @@ int main(int argc, char *argv[])
 
     HIP_ASSERT(hipModuleGetFunction(&Function, Module, HSA_KERNEL));
 
+    unsigned int * host_int_test = (unsigned int *)malloc(256*4);
+    for (int i =0;i<256;i++)
+    {
+         host_int_test[0]=0;
+    }
+    unsigned int * kevin_int_test;
 
+    HIP_ASSERT(hipMalloc(&kevin_int_test, 256*4));
 
     struct {
-        half * in;
-        half * wei;
-        half *out;
+        half * p_in_global;
+        half * p_wei_global;
+        half * p_out_global;
+        unsigned int  * kevin_int_test;
     } args;
 
-    args.in = dev_in;
-    args.wei = dev_wei;
-    args.out = out;
+    args.p_in_global = dev_in;
+    args.p_wei_global = dev_wei;
+    args.p_out_global = dev_out;
+    args.kevin_int_test = kevin_int_test;
 
     size_t arg_size = sizeof(args);
     void* config[] = {HIP_LAUNCH_PARAM_BUFFER_POINTER, &args, HIP_LAUNCH_PARAM_BUFFER_SIZE,
                             &arg_size, HIP_LAUNCH_PARAM_END};
 
     printf("======gpu start=======\n");
-//hipLaunchKernelGGL()
-
+    //1024*128*14*14/128*128=1568
     HIP_ASSERT(hipModuleLaunchKernel(Function, 1568,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
+    HIP_ASSERT(hipMemcpy(out, dev_out, outSize, hipMemcpyDeviceToHost));
+
+    for (int i = 0;i< N * K* Oh* Ow;i++ )
+    {
+        if ( i<10)
+        {
+            printf("======verify %d gpu %f  cpu %f=======\n",i,half_cast<float>(out[i]), half_cast<float>(cpu_out[i]));
+        }
+
+        if (half_cast<float>(out[i])-half_cast<float>(cpu_out[i]) >=0.01f)
+        {
+            printf("==========error index i %d gpu %f  cpu %f==========\n",i,half_cast<float>(out[i]), half_cast<float>(cpu_out[i]));
+            break;
+        }
+        
+
+    }
 
 
+
+    HIP_ASSERT(hipMemcpy(host_int_test, kevin_int_test, 256*4, hipMemcpyDeviceToHost));
+    printf("======after test %u %u=====\n",host_int_test[0],host_int_test[1]);
     return 0;
 }
