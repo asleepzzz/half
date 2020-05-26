@@ -44,7 +44,7 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
                     // sliding window for this filter
                     float value =0.0f;
                     o_idx = in*k*oh*ow+ik*oh*ow+ioh*ow+iow;
-                    if (o_idx>10) continue;
+                    if (o_idx>1000) continue;
                     
                     for(ic=0;ic<c;ic++){
                         for(ir=0;ir<fy;ir++){
@@ -71,15 +71,15 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
 int main(int argc, char *argv[])
 {
 	//half a(3.14159), b(-7), c = sin(a+b);
-    unsigned int N = 128;
-    unsigned int K = 1024;
-    unsigned int C = 1024;
-    unsigned int H = 14;
-    unsigned int W = 14;
-    unsigned int R = 1;
-    unsigned int S = 1;
-    unsigned int Oh = conv_out_size(size_t(H), size_t(0), size_t(0), size_t(R), size_t(1));
-    unsigned int Ow = conv_out_size(size_t(W), size_t(0), size_t(0), size_t(S), size_t(1));
+    unsigned int N = 256;
+    unsigned int K = 2048;
+    unsigned int C = 288;
+    unsigned int H = 35;
+    unsigned int W = 35;
+    unsigned int R = 3;
+    unsigned int S = 3;
+    unsigned int Oh = conv_out_size(size_t(H), size_t(0), size_t(0), size_t(R), size_t(2));
+    unsigned int Ow = conv_out_size(size_t(W), size_t(0), size_t(0), size_t(S), size_t(2));
 
 
     unsigned int inSize = N * C* H* W* sizeof(half);
@@ -90,6 +90,10 @@ int main(int argc, char *argv[])
     half *out = (half *)malloc(outSize);
     half *cpu_out = (half *)malloc(outSize);
 
+    HIP_ASSERT(hipSetDevice(0));
+    hipInit(0);
+
+
     half *dev_in, *dev_wei, *dev_out;
     HIP_ASSERT(hipMalloc(&dev_in, inSize));
     HIP_ASSERT(hipMalloc(&dev_wei, weiSize));
@@ -99,7 +103,7 @@ int main(int argc, char *argv[])
     {
         half tmp(1.0);
         half tmp2(0.0);
-        //half min is 0.00006,so use 0.0001*constant,due to C*R*S=1024,if diff <0.001,it's ok
+        //half min is 0.00006,so use 0.0001*constant,due to C*R*S=2880,if diff <0.001,it's ok
         in[i] =  half_cast<half>(0.0001f*(i%10));
     }
 
@@ -115,15 +119,13 @@ int main(int argc, char *argv[])
         cpu_out[i] =  half_cast<half>(0.0f);
     }
 
-    cpu_conv_fwd_nchw(in, wei,cpu_out, N, W, H, C, K, R, S , 0 ,0 , 1, 1, 1, 1);
+    cpu_conv_fwd_nchw(in, wei,cpu_out, N, W, H, C, K, R, S , 0 ,0 , 2, 2, 1, 1);
     HIP_ASSERT(hipMemcpy(dev_in, in, inSize, hipMemcpyHostToDevice));
     HIP_ASSERT(hipMemcpy(dev_wei, wei, weiSize, hipMemcpyHostToDevice));
     HIP_ASSERT(hipMemcpy(dev_out, out, outSize, hipMemcpyHostToDevice));
 
 
 
-    HIP_ASSERT(hipSetDevice(0));
-    hipInit(0);
     hipDevice_t device;
     hipCtx_t context;
     hipDeviceGet(&device, 0);
@@ -149,26 +151,26 @@ int main(int argc, char *argv[])
         half * p_in_global;
         half * p_wei_global;
         half * p_out_global;
-        unsigned int  * kevin_int_test;
+        //unsigned int  * kevin_int_test;
     } args;
 
     args.p_in_global = dev_in;
     args.p_wei_global = dev_wei;
     args.p_out_global = dev_out;
-    args.kevin_int_test = kevin_int_test;
+    //args.kevin_int_test = kevin_int_test;
 
     size_t arg_size = sizeof(args);
     void* config[] = {HIP_LAUNCH_PARAM_BUFFER_POINTER, &args, HIP_LAUNCH_PARAM_BUFFER_SIZE,
                             &arg_size, HIP_LAUNCH_PARAM_END};
 
     printf("======gpu start=======\n");
-    //1024*128*14*14/128*128=1568
-    HIP_ASSERT(hipModuleLaunchKernel(Function, 1568,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
+    //(2048/256)*(256*17*17/128)=4624
+    HIP_ASSERT(hipModuleLaunchKernel(Function, 4624,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
     HIP_ASSERT(hipMemcpy(out, dev_out, outSize, hipMemcpyDeviceToHost));
 
     for (int i = 0;i< N * K* Oh* Ow;i++ )
     {
-        if ( i<10)
+        if ( i<1000)
         {
             printf("======verify %d gpu %f  cpu %f=======\n",i,half_cast<float>(out[i]), half_cast<float>(cpu_out[i]));
         }
@@ -184,7 +186,7 @@ int main(int argc, char *argv[])
 
 
 
-    HIP_ASSERT(hipMemcpy(host_int_test, kevin_int_test, 256*4, hipMemcpyDeviceToHost));
-    printf("======after test %u %u=====\n",host_int_test[0],host_int_test[1]);
+    //HIP_ASSERT(hipMemcpy(host_int_test, kevin_int_test, 256*4, hipMemcpyDeviceToHost));
+    //printf("======after test %u %u=====\n",host_int_test[0],host_int_test[1]);
     return 0;
 }
