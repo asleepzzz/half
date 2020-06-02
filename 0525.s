@@ -460,29 +460,6 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_cndmask_b32_e64 v86, v17, 0, s[10:11]
 
 
-
-
-	ds_read2st64_b64 v[18:21], v10 offset1:2
-	ds_read2st64_b64 v[22:25], v11 offset1:2
-	ds_read2st64_b64 v[26:29], v10 offset0:4 offset1:6
-	ds_read2st64_b64 v[30:33], v11 offset0:4 offset1:6
-	s_waitcnt lgkmcnt(2)
-	v_mfma_f32_32x32x4f16 a[32:63], v[18:19], v[22:23], a[32:63] cbsz:1 abid:1
-	v_mfma_f32_32x32x4f16 a[0:31], v[18:19], v[22:23], a[0:31] cbsz:1
-	v_mfma_f32_32x32x4f16 a[32:63], v[20:21], v[24:25], a[32:63] cbsz:1 abid:1
-	v_mfma_f32_32x32x4f16 a[0:31], v[20:21], v[24:25], a[0:31] cbsz:1
-
-	s_waitcnt lgkmcnt(0)
-	v_mfma_f32_32x32x4f16 a[32:63], v[26:27], v[30:31], a[32:63] cbsz:1 abid:1
-	v_mfma_f32_32x32x4f16 a[0:31], v[26:27], v[30:31], a[0:31] cbsz:1
-
-	v_mfma_f32_32x32x4f16 a[0:31], v[28:29], v[32:33], a[0:31] cbsz:1
-	v_mfma_f32_32x32x4f16 a[32:63], v[28:29], v[32:33], a[32:63] cbsz:1 abid:1
-	ds_read2st64_b64 v[38:41], v10 offset0:8 offset1:10
-	ds_read2st64_b64 v[42:45], v11 offset0:8 offset1:10
-	ds_read2st64_b64 v[46:49], v10 offset0:12 offset1:14
-	ds_read2st64_b64 v[50:53], v11 offset0:12 offset1:14
-
 	v_add_u32_e32 v13, 64, v13
 	s_nop 0
 	s_nop 0
@@ -490,6 +467,8 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	buffer_load_dwordx2 v[56:57], v63, s[20:23], s28 offen offset:3268
 	buffer_load_dwordx2 v[54:55], v63, s[20:23], s27 offen offset:2180
 	buffer_load_dwordx2 v[36:37], v63, s[20:23], s26 offen offset:1092
+
+
 	v_add_u32_e32 v63, v16, v58
 	v_mov_b32_e32 v16, v58
 	v_sub_u32_e32 v58, v60, v58
@@ -517,6 +496,8 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_cndmask_b32_e64 v82, v62, v17, s[8:9]
 	v_cndmask_b32_e64 v84, v62, v17, s[6:7]
 	v_cndmask_b32_e64 v83, v17, 0, s[6:7]
+
+
 	v_mul_lo_u32 v62, v65, 35
 	v_mul_lo_u32 v65, v67, 35
 	v_sub_u32_e32 v67, v74, v61
@@ -529,25 +510,49 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_mul_lo_u32 v74, v60, 35
 	v_mul_lo_u32 v67, v67, 35
 	v_mul_lo_u32 v61, v61, 35
+
+
+;//kevin change v23 to v101
 	v_add3_u32 v17, v63, v66, v59
-	v_add_u32_e32 v23, v17, v64
+
+	v_add_u32_e32 v101, v17, v64
 	v_add_u32_e32 v59, v17, v58
-	v_add3_u32 v22, v23, v77, v62
-	v_add3_u32 v60, v23, v79, v62
+
+;//kevin change v22 to v100
+
+	v_add3_u32 v100, v101, v77, v62
+
+
+	v_add3_u32 v60, v101, v79, v62
+
 	v_add3_u32 v62, v59, v80, v65
 	v_add3_u32 v58, v59, v78, v65
 	v_add_u32_e32 v65, v68, v17
 	v_add_u32_e32 v69, v69, v17
+
+
+
 	v_add3_u32 v66, v59, v72, v74
 	v_add3_u32 v70, v59, v76, v61
 	v_add3_u32 v74, v59, v82, v74
-	v_add3_u32 v68, v23, v75, v67
-	v_add3_u32 v64, v23, v71, v73
-	v_add3_u32 v72, v23, v81, v73
+	v_add3_u32 v68, v101, v75, v67
+	v_add3_u32 v64, v101, v71, v73
+	v_add3_u32 v72, v101, v81, v73
 	v_add_u32_e32 v76, v65, v83
 	v_add_u32_e32 v80, v65, v84
 	v_add_u32_e32 v78, v69, v86
-	v_ashrrev_i32_e32 v23, 31, v22
+
+
+
+;//kevin change 17 to 103,  18 t0 104, 19 t0 105
+        v_mov_b32 v103,v17
+        v_mov_b32 v104,v18
+
+
+
+
+
+	v_ashrrev_i32_e32 v101, 31, v100
 	v_ashrrev_i32_e32 v59, 31, v58
 	v_ashrrev_i32_e32 v61, 31, v60
 	v_ashrrev_i32_e32 v63, 31, v62
@@ -559,12 +564,15 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_ashrrev_i32_e32 v81, 31, v80
 	v_ashrrev_i32_e32 v73, 31, v72
 	v_ashrrev_i32_e32 v75, 31, v74
-	v_ashrrev_i32_e32 v18, 31, v17
+	v_ashrrev_i32_e32 v104, 31, v103
+
+
+
 	v_add_u32_e32 v82, v69, v85
 	v_ashrrev_i32_e32 v69, 31, v68
 	v_ashrrev_i32_e32 v83, 31, v82
-	v_lshlrev_b64 v[18:19], 1, v[17:18]
-	v_lshlrev_b64 v[22:23], 1, v[22:23]
+	v_lshlrev_b64 v[104:105], 1, v[103:104]
+	v_lshlrev_b64 v[100:101], 1, v[100:101]
 	v_lshlrev_b64 v[58:59], 1, v[58:59]
 	v_lshlrev_b64 v[60:61], 1, v[60:61]
 	v_lshlrev_b64 v[62:63], 1, v[62:63]
@@ -578,6 +586,48 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_lshlrev_b64 v[72:73], 1, v[72:73]
 	v_lshlrev_b64 v[74:75], 1, v[74:75]
 	v_lshlrev_b64 v[82:83], 1, v[82:83]
+
+
+
+
+
+	ds_read2st64_b64 v[18:21], v10 offset1:2
+	ds_read2st64_b64 v[22:25], v11 offset1:2
+	ds_read2st64_b64 v[26:29], v10 offset0:4 offset1:6
+	ds_read2st64_b64 v[30:33], v11 offset0:4 offset1:6
+	s_waitcnt lgkmcnt(2)
+	v_mfma_f32_32x32x4f16 a[32:63], v[18:19], v[22:23], a[32:63] cbsz:1 abid:1
+	v_mfma_f32_32x32x4f16 a[0:31], v[18:19], v[22:23], a[0:31] cbsz:1
+	v_mfma_f32_32x32x4f16 a[32:63], v[20:21], v[24:25], a[32:63] cbsz:1 abid:1
+	v_mfma_f32_32x32x4f16 a[0:31], v[20:21], v[24:25], a[0:31] cbsz:1
+
+	s_waitcnt lgkmcnt(0)
+	v_mfma_f32_32x32x4f16 a[32:63], v[26:27], v[30:31], a[32:63] cbsz:1 abid:1
+	v_mfma_f32_32x32x4f16 a[0:31], v[26:27], v[30:31], a[0:31] cbsz:1
+
+	v_mfma_f32_32x32x4f16 a[0:31], v[28:29], v[32:33], a[0:31] cbsz:1
+	v_mfma_f32_32x32x4f16 a[32:63], v[28:29], v[32:33], a[32:63] cbsz:1 abid:1
+	ds_read2st64_b64 v[38:41], v10 offset0:8 offset1:10
+	ds_read2st64_b64 v[42:45], v11 offset0:8 offset1:10
+	ds_read2st64_b64 v[46:49], v10 offset0:12 offset1:14
+	ds_read2st64_b64 v[50:53], v11 offset0:12 offset1:14
+
+
+
+
+
+
+
+;//for write
+
+
+
+
+
+
+
+
+
 	s_waitcnt lgkmcnt(2)
 	v_mfma_f32_32x32x4f16 a[0:31], v[38:39], v[42:43], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[38:39], v[42:43], a[32:63] cbsz:1 abid:1
@@ -586,7 +636,7 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_bfi_b32 v57, v6, v57, v57
 	s_nop 0
 	s_nop 0
-	global_load_ushort v85, v[22:23], s[18:19]
+	global_load_ushort v85, v[100:101], s[18:19]
 	global_load_ushort v86, v[58:59], s[18:19]
 	global_load_ushort v93, v[60:61], s[18:19]
 	global_load_ushort v94, v[62:63], s[18:19]
@@ -599,9 +649,9 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	global_load_ushort v95, v[80:81], s[18:19]
 	global_load_ushort v96, v[72:73], s[18:19]
 	global_load_ushort v97, v[74:75], s[18:19]
-	global_load_ushort v84, v[18:19], s[18:19]
+	global_load_ushort v84, v[104:105], s[18:19]
 	global_load_ushort v98, v[82:83], s[18:19]
-	global_load_ushort v20, v[18:19], s[18:19] offset:2450
+	global_load_ushort v20, v[104:105], s[18:19] offset:2450
 	v_mfma_f32_32x32x4f16 a[0:31], v[40:41], v[44:45], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[40:41], v[44:45], a[32:63] cbsz:1 abid:1
 	;;#ASMSTART
@@ -625,13 +675,13 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	s_waitcnt vmcnt(11)
 	v_lshl_or_b32 v19, v87, 16, v19
 	s_waitcnt vmcnt(10)
-	v_and_b32_e32 v22, v6, v88
+	v_and_b32_e32 v100, v6, v88
 	s_waitcnt vmcnt(9)
-	v_lshl_or_b32 v22, v89, 16, v22
+	v_lshl_or_b32 v100, v89, 16, v100
 	s_waitcnt vmcnt(8)
-	v_and_b32_e32 v23, v6, v90
+	v_and_b32_e32 v101, v6, v90
 	s_waitcnt vmcnt(7)
-	v_lshl_or_b32 v23, v91, 16, v23
+	v_lshl_or_b32 v101, v91, 16, v101
 	s_waitcnt vmcnt(6)
 	v_and_b32_e32 v24, v6, v92
 	s_waitcnt vmcnt(5)
@@ -645,7 +695,7 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_lshl_or_b32 v20, v20, 16, v24
 	v_lshl_or_b32 v25, v98, 16, v25
 	v_lshl_or_b32 v24, v96, 16, v26
-	ds_write2st64_b64 v9, v[18:19], v[22:23] offset1:2
+	ds_write2st64_b64 v9, v[18:19], v[100:101] offset1:2
 	ds_write2st64_b64 v9, v[20:21], v[24:25] offset0:4 offset1:6
 	s_cbranch_scc1 BB0_1
 ; %bb.2:                                ; %_ZNK2ck53GridwiseBatchedGemmTransposedANormalBNormalCXdlops_v2ILi9248ELi256EDF16_fDF16_KNS_27TransformedTensorDescriptorINS_22NativeTensorDescriptorIJNS_15NativeDimensionILi2048ELi2592EEENS3_ILi2592ELi1EEEEEENS_5TupleIJNS_11PassThroughILi2048EEENS_7UnMergeINS_8SequenceIJLi1ELi648ELi4EEEEEEEEENS7_IJNSB_IJLi0EEEENSB_IJLi1EEEEEEENS7_IJNSB_IJLi2EEEENSB_IJLi0ELi1ELi3EEEEEEEEEKNS1_INS1_INS1_INS1_INS2_IJNS3_ILi256ELi352800EEENS3_ILi288ELi1225EEENS3_ILi35ELi35EEENS3_ILi35ELi1EEEEEENS7_IJNS8_ILi256EEENS8_ILi288EEENS_3PadINSB_IJLi35ELi35EEEENSB_IJLi0ELi0EEEESW_Lb0EEEEEENS7_IJSF_SG_NSB_IJLi2ELi3EEEEEEES10_EENS7_IJSS_ST_NS_5EmbedILi35ENSB_IJLi3ELi17EEEENSB_IJLi1ELi2ELi0EEEELb0EEES15_EEENS7_IJSF_SG_SI_NSB_IJLi3EEEEEEENS7_IJSF_SG_SZ_NSB_IJLi4ELi5EEEEEEEEENS7_IJNS_5MergeINSB_IJLi288ELi3ELi3EEEEEENS1C_INSB_IJLi256ELi17ELi17EEEEEEEEENS7_IJNSB_IJLi1ELi2ELi4EEEENSB_IJLi0ELi3ELi5EEEEEEESH_EENS7_IJSD_NS8_ILi73984EEEEEESH_NS7_IJSJ_SI_EEEEEKNS1_INS2_IJNS3_ILi1ELi0EEENS3_ILi256ELi591872EEENS3_ILi2048ELi289EEENS3_ILi17ELi17EEENS3_ILi
@@ -1025,7 +1075,7 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 		.amdhsa_system_sgpr_workgroup_id_z 0
 		.amdhsa_system_sgpr_workgroup_info 0
 		.amdhsa_system_vgpr_workitem_id 0
-		.amdhsa_next_free_vgpr 99
+		.amdhsa_next_free_vgpr 128
 		.amdhsa_next_free_sgpr 44
 		.amdhsa_reserve_flat_scratch 0
 		.amdhsa_float_round_mode_32 0
@@ -1114,7 +1164,7 @@ amdhsa.kernels:
     .sgpr_count:     48
     .sgpr_spill_count: 0
     .symbol:         gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw.kd
-    .vgpr_count:     99
+    .vgpr_count:     128
     .vgpr_spill_count: 0
     .wavefront_size: 64
 amdhsa.version:
