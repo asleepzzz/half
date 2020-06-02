@@ -151,13 +151,13 @@ int main(int argc, char *argv[])
         half * p_in_global;
         half * p_wei_global;
         half * p_out_global;
-        //unsigned int  * kevin_int_test;
+        unsigned int  * kevin_int_test;
     } args;
 
     args.p_in_global = dev_in;
     args.p_wei_global = dev_wei;
     args.p_out_global = dev_out;
-    //args.kevin_int_test = kevin_int_test;
+    args.kevin_int_test = kevin_int_test;
 
     size_t arg_size = sizeof(args);
     void* config[] = {HIP_LAUNCH_PARAM_BUFFER_POINTER, &args, HIP_LAUNCH_PARAM_BUFFER_SIZE,
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
 
         if (half_cast<float>(out[i])-half_cast<float>(cpu_out[i]) >=0.01f)
         {
-            printf("==========error index i %d gpu %f  cpu %f==========\n",i,half_cast<float>(out[i]), half_cast<float>(cpu_out[i]));
+            //printf("==========error index i %d gpu %f  cpu %f==========\n",i,half_cast<float>(out[i]), half_cast<float>(cpu_out[i]));
             break;
         }
         
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 
 
 
-    //HIP_ASSERT(hipMemcpy(host_int_test, kevin_int_test, 256*4, hipMemcpyDeviceToHost));
-    //printf("======after test %u %u=====\n",host_int_test[0],host_int_test[1]);
+    HIP_ASSERT(hipMemcpy(host_int_test, kevin_int_test, 256*4, hipMemcpyDeviceToHost));
+    printf("======after test %u %u=====\n",host_int_test[0],host_int_test[1]);
     return 0;
 }
