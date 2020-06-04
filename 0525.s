@@ -588,6 +588,29 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_lshlrev_b64 v[82:83], 1, v[82:83]
 
 
+	s_waitcnt vmcnt(2)
+	v_bfi_b32 v56, v6, v56, v56
+	v_bfi_b32 v57, v6, v57, v57
+	s_nop 0
+	s_nop 0
+	global_load_ushort v85, v[100:101], s[18:19]
+	global_load_ushort v86, v[58:59], s[18:19]
+	global_load_ushort v93, v[60:61], s[18:19]
+	global_load_ushort v94, v[62:63], s[18:19]
+	global_load_ushort v87, v[76:77], s[18:19]
+	global_load_ushort v88, v[64:65], s[18:19]
+	global_load_ushort v89, v[66:67], s[18:19]
+	global_load_ushort v90, v[78:79], s[18:19]
+
+
+	global_load_ushort v91, v[68:69], s[18:19]
+	global_load_ushort v92, v[70:71], s[18:19]
+	global_load_ushort v95, v[80:81], s[18:19]
+	global_load_ushort v96, v[72:73], s[18:19]
+	global_load_ushort v97, v[74:75], s[18:19]
+	global_load_ushort v84, v[104:105], s[18:19]
+	global_load_ushort v98, v[82:83], s[18:19]
+	global_load_ushort v20, v[104:105], s[18:19] offset:2450
 
 
 
@@ -614,28 +637,6 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 
 
 
-
-	s_waitcnt vmcnt(2)
-	v_bfi_b32 v56, v6, v56, v56
-	v_bfi_b32 v57, v6, v57, v57
-	s_nop 0
-	s_nop 0
-	global_load_ushort v85, v[100:101], s[18:19]
-	global_load_ushort v86, v[58:59], s[18:19]
-	global_load_ushort v93, v[60:61], s[18:19]
-	global_load_ushort v94, v[62:63], s[18:19]
-	global_load_ushort v87, v[76:77], s[18:19]
-	global_load_ushort v88, v[64:65], s[18:19]
-	global_load_ushort v89, v[66:67], s[18:19]
-	global_load_ushort v90, v[78:79], s[18:19]
-	global_load_ushort v91, v[68:69], s[18:19]
-	global_load_ushort v92, v[70:71], s[18:19]
-	global_load_ushort v95, v[80:81], s[18:19]
-	global_load_ushort v96, v[72:73], s[18:19]
-	global_load_ushort v97, v[74:75], s[18:19]
-	global_load_ushort v84, v[104:105], s[18:19]
-	global_load_ushort v98, v[82:83], s[18:19]
-	global_load_ushort v20, v[104:105], s[18:19] offset:2450
 
 
 
