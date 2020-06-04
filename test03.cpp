@@ -165,7 +165,23 @@ int main(int argc, char *argv[])
 
     printf("======gpu start=======\n");
     //(2048/256)*(256*17*17/128)=4624
+
+    float eventMs = 0.0f;
+    hipEvent_t start, stop;
+    hipEventCreate(&start);
+    hipEventCreate(&stop);
+    hipEventRecord(start, NULL);
+
     HIP_ASSERT(hipModuleLaunchKernel(Function, 4624,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
+
+
+    hipEventRecord(stop, NULL);
+    hipEventSynchronize(stop);
+    hipEventElapsedTime(&eventMs, start, stop);
+    printf("hip kernel profiler computation time taken  = %6.3fms\n", eventMs);
+
+
+
     HIP_ASSERT(hipMemcpy(out, dev_out, outSize, hipMemcpyDeviceToHost));
 
     for (int i = 0;i< N * K* Oh* Ow;i++ )
@@ -188,5 +204,11 @@ int main(int argc, char *argv[])
 
     HIP_ASSERT(hipMemcpy(host_int_test, kevin_int_test, 256*4, hipMemcpyDeviceToHost));
     printf("======after test %u %u=====\n",host_int_test[0],host_int_test[1]);
+
+
+    HIP_ASSERT(hipFree(dev_in));
+    HIP_ASSERT(hipFree(dev_wei));
+    HIP_ASSERT(hipFree(dev_out));
+    HIP_ASSERT(hipFree(kevin_int_test));
     return 0;
 }
