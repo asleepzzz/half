@@ -615,22 +615,6 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 
 
 
-
-
-
-;//for write
-
-
-
-
-
-
-
-
-
-	s_waitcnt lgkmcnt(2)
-	v_mfma_f32_32x32x4f16 a[0:31], v[38:39], v[42:43], a[0:31] cbsz:1
-	v_mfma_f32_32x32x4f16 a[32:63], v[38:39], v[42:43], a[32:63] cbsz:1 abid:1
 	s_waitcnt vmcnt(2)
 	v_bfi_b32 v56, v6, v56, v56
 	v_bfi_b32 v57, v6, v57, v57
@@ -652,6 +636,22 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	global_load_ushort v84, v[104:105], s[18:19]
 	global_load_ushort v98, v[82:83], s[18:19]
 	global_load_ushort v20, v[104:105], s[18:19] offset:2450
+
+
+
+;//for write
+
+
+
+
+
+
+
+
+
+	s_waitcnt lgkmcnt(2)
+	v_mfma_f32_32x32x4f16 a[0:31], v[38:39], v[42:43], a[0:31] cbsz:1
+	v_mfma_f32_32x32x4f16 a[32:63], v[38:39], v[42:43], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[40:41], v[44:45], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[40:41], v[44:45], a[32:63] cbsz:1 abid:1
 	;;#ASMSTART
