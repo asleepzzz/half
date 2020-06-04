@@ -610,7 +610,6 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	global_load_ushort v97, v[74:75], s[18:19]
 	global_load_ushort v84, v[104:105], s[18:19]
 	global_load_ushort v98, v[82:83], s[18:19]
-	global_load_ushort v20, v[104:105], s[18:19] offset:2450
 
 
 
@@ -624,7 +623,9 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_mfma_f32_32x32x4f16 a[32:63], v[20:21], v[24:25], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[20:21], v[24:25], a[0:31] cbsz:1
 
+	global_load_ushort v20, v[104:105], s[18:19] offset:2450
 	s_waitcnt lgkmcnt(0)
+
 	v_mfma_f32_32x32x4f16 a[32:63], v[26:27], v[30:31], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[26:27], v[30:31], a[0:31] cbsz:1
 
@@ -653,6 +654,7 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	s_waitcnt lgkmcnt(2)
 	v_mfma_f32_32x32x4f16 a[0:31], v[38:39], v[42:43], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[38:39], v[42:43], a[32:63] cbsz:1 abid:1
+
 	v_mfma_f32_32x32x4f16 a[0:31], v[40:41], v[44:45], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[40:41], v[44:45], a[32:63] cbsz:1 abid:1
 	;;#ASMSTART
