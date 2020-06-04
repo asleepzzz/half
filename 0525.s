@@ -553,8 +553,25 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 
 
 	v_ashrrev_i32_e32 v101, 31, v100
+	v_lshlrev_b64 v[100:101], 1, v[100:101]
+	global_load_ushort v85, v[100:101], s[18:19]
+
+
+
+
 	v_ashrrev_i32_e32 v59, 31, v58
+	v_lshlrev_b64 v[58:59], 1, v[58:59]
+	global_load_ushort v86, v[58:59], s[18:19]
+
+
+
 	v_ashrrev_i32_e32 v61, 31, v60
+	v_lshlrev_b64 v[60:61], 1, v[60:61]
+	global_load_ushort v93, v[60:61], s[18:19]
+
+
+
+
 	v_ashrrev_i32_e32 v63, 31, v62
 	v_ashrrev_i32_e32 v77, 31, v76
 	v_ashrrev_i32_e32 v65, 31, v64
@@ -572,70 +589,94 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_ashrrev_i32_e32 v69, 31, v68
 	v_ashrrev_i32_e32 v83, 31, v82
 	v_lshlrev_b64 v[104:105], 1, v[103:104]
-	v_lshlrev_b64 v[100:101], 1, v[100:101]
-	v_lshlrev_b64 v[58:59], 1, v[58:59]
-	v_lshlrev_b64 v[60:61], 1, v[60:61]
-	v_lshlrev_b64 v[62:63], 1, v[62:63]
-	v_lshlrev_b64 v[76:77], 1, v[76:77]
-	v_lshlrev_b64 v[64:65], 1, v[64:65]
-	v_lshlrev_b64 v[66:67], 1, v[66:67]
-	v_lshlrev_b64 v[78:79], 1, v[78:79]
-	v_lshlrev_b64 v[68:69], 1, v[68:69]
-	v_lshlrev_b64 v[70:71], 1, v[70:71]
-	v_lshlrev_b64 v[80:81], 1, v[80:81]
-	v_lshlrev_b64 v[72:73], 1, v[72:73]
-	v_lshlrev_b64 v[74:75], 1, v[74:75]
-	v_lshlrev_b64 v[82:83], 1, v[82:83]
 
-
-	s_waitcnt vmcnt(2)
-	v_bfi_b32 v56, v6, v56, v56
-	v_bfi_b32 v57, v6, v57, v57
-	s_nop 0
-	s_nop 0
-	global_load_ushort v85, v[100:101], s[18:19]
-	global_load_ushort v86, v[58:59], s[18:19]
-	global_load_ushort v93, v[60:61], s[18:19]
-	global_load_ushort v94, v[62:63], s[18:19]
-	global_load_ushort v87, v[76:77], s[18:19]
-	global_load_ushort v88, v[64:65], s[18:19]
-	global_load_ushort v89, v[66:67], s[18:19]
-	global_load_ushort v90, v[78:79], s[18:19]
-
-
-	global_load_ushort v91, v[68:69], s[18:19]
-	global_load_ushort v92, v[70:71], s[18:19]
-	global_load_ushort v95, v[80:81], s[18:19]
-	global_load_ushort v96, v[72:73], s[18:19]
-	global_load_ushort v97, v[74:75], s[18:19]
-	global_load_ushort v84, v[104:105], s[18:19]
-	global_load_ushort v98, v[82:83], s[18:19]
-
-
-
-	ds_read2st64_b64 v[18:21], v10 offset1:2
+        ds_read2st64_b64 v[18:21], v10 offset1:2
 	ds_read2st64_b64 v[22:25], v11 offset1:2
 	ds_read2st64_b64 v[26:29], v10 offset0:4 offset1:6
 	ds_read2st64_b64 v[30:33], v11 offset0:4 offset1:6
-	s_waitcnt lgkmcnt(2)
+
+	v_lshlrev_b64 v[62:63], 1, v[62:63]
+
+	global_load_ushort v94, v[62:63], s[18:19]
+	v_lshlrev_b64 v[76:77], 1, v[76:77]
+        s_waitcnt lgkmcnt(2)
 	v_mfma_f32_32x32x4f16 a[32:63], v[18:19], v[22:23], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[18:19], v[22:23], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[20:21], v[24:25], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[20:21], v[24:25], a[0:31] cbsz:1
 
-	global_load_ushort v20, v[104:105], s[18:19] offset:2450
-	s_waitcnt lgkmcnt(0)
 
+	
+
+
+	global_load_ushort v87, v[76:77], s[18:19]
+	v_lshlrev_b64 v[64:65], 1, v[64:65]
+
+
+	global_load_ushort v88, v[64:65], s[18:19]
+	v_lshlrev_b64 v[66:67], 1, v[66:67]
+        s_waitcnt lgkmcnt(0)
+        
 	v_mfma_f32_32x32x4f16 a[32:63], v[26:27], v[30:31], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[26:27], v[30:31], a[0:31] cbsz:1
-
 	v_mfma_f32_32x32x4f16 a[0:31], v[28:29], v[32:33], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[28:29], v[32:33], a[32:63] cbsz:1 abid:1
-	ds_read2st64_b64 v[38:41], v10 offset0:8 offset1:10
+
+
+
+	global_load_ushort v89, v[66:67], s[18:19]
+	v_lshlrev_b64 v[78:79], 1, v[78:79]
+        
+
+	global_load_ushort v90, v[78:79], s[18:19]
+	v_lshlrev_b64 v[68:69], 1, v[68:69]
+        ds_read2st64_b64 v[38:41], v10 offset0:8 offset1:10
 	ds_read2st64_b64 v[42:45], v11 offset0:8 offset1:10
 	ds_read2st64_b64 v[46:49], v10 offset0:12 offset1:14
 	ds_read2st64_b64 v[50:53], v11 offset0:12 offset1:14
 
+
+	
+
+	global_load_ushort v91, v[68:69], s[18:19]
+	v_lshlrev_b64 v[70:71], 1, v[70:71]
+
+	global_load_ushort v92, v[70:71], s[18:19]
+	v_lshlrev_b64 v[80:81], 1, v[80:81]
+
+
+
+	global_load_ushort v95, v[80:81], s[18:19]
+	v_lshlrev_b64 v[72:73], 1, v[72:73]
+
+	global_load_ushort v96, v[72:73], s[18:19]
+	v_lshlrev_b64 v[74:75], 1, v[74:75]
+        s_waitcnt lgkmcnt(2)
+	v_mfma_f32_32x32x4f16 a[0:31], v[38:39], v[42:43], a[0:31] cbsz:1
+	v_mfma_f32_32x32x4f16 a[32:63], v[38:39], v[42:43], a[32:63] cbsz:1 abid:1
+
+	v_mfma_f32_32x32x4f16 a[0:31], v[40:41], v[44:45], a[0:31] cbsz:1
+	v_mfma_f32_32x32x4f16 a[32:63], v[40:41], v[44:45], a[32:63] cbsz:1 abid:1
+
+
+	
+	global_load_ushort v97, v[74:75], s[18:19]
+	v_lshlrev_b64 v[82:83], 1, v[82:83]
+
+	global_load_ushort v98, v[82:83], s[18:19]
+
+	;s_waitcnt vmcnt(2)
+	v_bfi_b32 v56, v6, v56, v56
+	v_bfi_b32 v57, v6, v57, v57
+	s_nop 0
+	s_nop 0
+
+
+	global_load_ushort v84, v[104:105], s[18:19]
+
+
+
+	global_load_ushort v20, v[104:105], s[18:19] offset:2450
 
 
 
@@ -651,12 +692,6 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 
 
 
-	s_waitcnt lgkmcnt(2)
-	v_mfma_f32_32x32x4f16 a[0:31], v[38:39], v[42:43], a[0:31] cbsz:1
-	v_mfma_f32_32x32x4f16 a[32:63], v[38:39], v[42:43], a[32:63] cbsz:1 abid:1
-
-	v_mfma_f32_32x32x4f16 a[0:31], v[40:41], v[44:45], a[0:31] cbsz:1
-	v_mfma_f32_32x32x4f16 a[32:63], v[40:41], v[44:45], a[32:63] cbsz:1 abid:1
 	;;#ASMSTART
 	    s_waitcnt lgkmcnt(0) 
      s_barrier     
@@ -669,6 +704,7 @@ BB0_1:                                  ; %if.then.i29.i.i.i.i.i.i.i.i
 	v_mfma_f32_32x32x4f16 a[32:63], v[46:47], v[50:51], a[32:63] cbsz:1 abid:1
 	v_mfma_f32_32x32x4f16 a[0:31], v[48:49], v[52:53], a[0:31] cbsz:1
 	v_mfma_f32_32x32x4f16 a[32:63], v[48:49], v[52:53], a[32:63] cbsz:1 abid:1
+
 	s_waitcnt vmcnt(14)
 	v_and_b32_e32 v19, v6, v86
 	s_waitcnt vmcnt(13)
