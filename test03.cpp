@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
     hipEventCreate(&stop);
     hipEventRecord(start, NULL);
 
-    HIP_ASSERT(hipModuleLaunchKernel(Function, 2*4624,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
+    HIP_ASSERT(hipModuleLaunchKernel(Function, 4624,1,1, 256,1,1,  0, 0, NULL, (void**)&config ));
 
 
     hipEventRecord(stop, NULL);
