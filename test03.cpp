@@ -67,7 +67,7 @@ static inline void cpu_conv_fwd_nchw(const half *src, const half *filter, half *
 }
 
 #define HSACO "xx.co"
-#define HSA_KERNEL "gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw"
+#define HSA_KERNEL "gridwise_group_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw"//"gridwise_convolution_forward_implicit_gemm_v4r4_xdlops_nchw_kcyx_nkhw"
 int main(int argc, char *argv[])
 {
 	//half a(3.14159), b(-7), c = sin(a+b);
